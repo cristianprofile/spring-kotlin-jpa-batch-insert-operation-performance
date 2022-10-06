@@ -1,0 +1,100 @@
+# Create a kotlin web application using spring data jpa - performance write operations jpa batch mode
+
+In this project I achieved reducing insertion time using jpa spring data's save all method
+When an application needs to write a lot of records in the same table is inefficient
+to write it one by one using save method in sequential mode. In this kind of process performance
+is a must using batch feature.
+
+Kotlin is used to be able to create a simple Spring web application using only on compilation file
+
+## Prerequisites
+
+* Java 8+, Docker and maven 3 installed.
+
+
+## Bulk properties definition
+
+It is a must to define 2 properties in application.yaml
+(total batch side to insert in book table and totalObjects to be written
+in database)
+
+[source,yalm]
+----
+spring:
+   jpa:
+     properties:
+       jdbc:
+          # total batch side to insert in book table
+          batch_size: 100
+
+
+# total objets to insert in book table
+
+bulk:
+ totalObjects: 1000
+----
+
+
+## api endpoints
+
+. http://localhost:8080/book/batch: endpoint using write batch approach saveAll operation (fastest option when book to be inserted - total objects -  was large amount of data
+. http://localhost:8080/book/sequential: endpoint using sequential save operation (slowest option when book to be inserted - total objects -  was large amount of data
+
+## Appreciations bulk process
+
+It is a must to define batch_size property. If your program use saveAll function but your program do not define this property
+your jdbc process won't use batch feature when is writing data to your database. Use generate_statistics property
+to be able to show Session metrics
+
+
+[source,yalm]
+----
+spring:
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100
+        generate_statistics: true
+----
+
+JDBC batches operations are 10:
+
+[source,log]
+----
+2022-10-06 10:56:01.241  INFO 30472 --- [io-8080-exec-10] i.StatisticalLoggingSessionEventListener : Session Metrics {
+    26200 nanoseconds spent acquiring 1 JDBC connections;
+    0 nanoseconds spent releasing 0 JDBC connections;
+    540385 nanoseconds spent preparing 1010 JDBC statements;
+    3390109 nanoseconds spent executing 1000 JDBC statements;
+    3668701 nanoseconds spent executing 10 JDBC batches;
+    0 nanoseconds spent performing 0 L2C puts;
+    0 nanoseconds spent performing 0 L2C hits;
+    0 nanoseconds spent performing 0 L2C misses;
+    12867399 nanoseconds spent executing 10 flushes (flushing a total of 5500 entities and 0 collections);
+    0 nanoseconds spent executing 0 partial-flushes (flushing a total of 0 entities and 0 collections)
+}
+----
+
+If you do not define batch_size property JDBC batches operations are 0:
+
+
+[source,log]
+----
+2022-10-06 11:29:19.513  INFO 30648 --- [nio-8080-exec-1] i.StatisticalLoggingSessionEventListener : Session Metrics {
+    58601 nanoseconds spent acquiring 1 JDBC connections;
+    0 nanoseconds spent releasing 0 JDBC connections;
+    19504668 nanoseconds spent preparing 2000 JDBC statements;
+    76157419 nanoseconds spent executing 2000 JDBC statements;
+    0 nanoseconds spent executing 0 JDBC batches;
+    0 nanoseconds spent performing 0 L2C puts;
+    0 nanoseconds spent performing 0 L2C hits;
+    0 nanoseconds spent performing 0 L2C misses;
+    136057801 nanoseconds spent executing 10 flushes (flushing a total of 5500 entities and 0 collections);
+    0 nanoseconds spent executing 0 partial-flushes (flushing a total of 0 entities and 0 collections)
+}
+----
+
+
+
+

@@ -1,0 +1,16 @@
+spring:
+  jpa:
+    show-sql: false
+    generate-ddl: true
+    properties:
+      hibernate:
+        jdbc:
+          #  batch_size: 100
+          cache:
+          use_second_level_cache: true
+        #order_updates: true
+        #order_inserts: true
+        generate_statistics: true
+
+bulk:
+ totalObjects: 1000
