@@ -38,7 +38,7 @@ bulk:
 ## api endpoints
 
 . http://localhost:8080/book/batch: endpoint using write batch approach saveAll operation (fastest option when book to be inserted - total objects -  was large amount of data
-. http://localhost:8080/book/sequential: endpoint using sequential save operation (slowest option when book to be inserted - total objects -  was large amount of data
+. http://localhost:8080/book/sequential: endpoint using sequential save operation (slowest option when book to be inserted - total objects -  was  small amount of data
 
 ## Appreciations bulk process
 
