@@ -5,7 +5,7 @@ When an application needs to write a lot of records in the same table is ineffic
 to write it one by one using save method in sequential mode. In this kind of process performance
 is a must using batch feature.
 
-Kotlin is used to be able to create a simple Spring web application using only on compilation file
+Kotlin is used to be able to create a simple Spring web application using only 1 compilation file
 
 ## Prerequisites
 
